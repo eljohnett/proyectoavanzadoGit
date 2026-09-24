@@ -34,8 +34,9 @@ jobs:
     steps:
       - name: Validar DEV_TOKEN
         run: |
-          if [ "${{ secrets.DEV_TOKEN }}" != "$LOCAL_DEV_TOKEN" ]; then
-            echo "Token no coincide"
-            exit 1
-          fi
-          echo "Token válido"
+         if ("${{ secrets.DEV_TOKEN }}" -ne "$env:LOCAL_DEV_TOKEN") {
+          echo "Token no coincide"
+          exit 1
+         }
+         
+         echo "Token válido"
