@@ -30,11 +30,16 @@ jobs:
 
       - name: Guardar cambios
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git diff --cached --quiet || git commit -m "Incrementar versión"
-          git push
+           git config user.name "github-actions[bot]"
+           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+           git add README.md
+           git diff --cached --quiet || git commit -m "Incrementar versión [skip ci]"
+
+           if [ "${{ github.event_name }}" = "pull_request" ]; then
+             git push origin HEAD:${{ github.head_ref }}
+           else
+             git push
+           fi
 
   validate:
     name: Job 2 - Self hosted
