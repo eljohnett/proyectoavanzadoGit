@@ -1,42 +1,54 @@
 name: CI
 
 on:
-  pull_request:
-    branches: [develop]
-    types: [opened, synchronize, reopened]
   push:
-    branches: [develop]
+    branches:
+      - develop
+
+  pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+      - synchronize
+      - reopened
+
   workflow_dispatch:
 
 jobs:
-  update-readme:
+  build:
+    name: Job 1 - GitHub hosted
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Añadir línea al README
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Añadir feature al README
         run: |
-            echo "Añadida feature: ${{ github.head_ref || github.ref_name }}" >> README.md
-      - name: Commit y push
+          echo "Añadida feature: develop" >> README.md
+
+      - name: Guardar cambios en README
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git commit -m "Actualiza README [skip ci]" || echo "Sin cambios"
+          git diff --cached --quiet || git commit -m "Añadida feature: develop"
           git push
 
-  validate-dev:
-    needs: update-readme
+  validate:
+    name: Job 2 - Self hosted
     runs-on: self-hosted
+    needs: build
+
     steps:
       - name: Validar DEV_TOKEN
+        env:
+          DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
         run: |
-         if ("${{ secrets.DEV_TOKEN }}" -ne "$env:LOCAL_DEV_TOKEN") {
-          echo "Token no coincide"
-          exit 1
-         }
-         
-         echo "Token válido"
+          if [ -z "$DEV_TOKEN" ]; then
+            echo "DEV_TOKEN no está configurado"
+            exit 1
+          fi
+
+          echo "DEV_TOKEN está configurado correctamente"
