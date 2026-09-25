@@ -34,15 +34,20 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add README.md
-          git diff --cached --quiet || git commit -m "Incrementar versión [skip ci]"
 
+          if git diff --cached --quiet; then
+            echo "No hay cambios que guardar"
+            exit 0
+          fi
+
+          git commit -m "Incrementar versión [skip ci]"
+  
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch origin "${{ github.head_ref }}"
-            git pull --rebase origin "${{ github.head_ref }}"
-            git push origin HEAD:"${{ github.head_ref }}"
+             git pull --rebase origin "${{ github.head_ref }}"
+             git push origin HEAD:"${{ github.head_ref }}"
           else
-            git pull --rebase origin main
-            git push
+             git pull --rebase origin main
+             git push origin HEAD:main
           fi
   validate:
     name: Job 2 - Self hosted
