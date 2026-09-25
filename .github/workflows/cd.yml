@@ -50,7 +50,7 @@ jobs:
              git push origin HEAD:main
           fi
   validate:
-    name: Job 2 - Self hosted
+   name: Job 2 - Self hosted
     runs-on: self-hosted
     needs: deploy
 
@@ -58,10 +58,10 @@ jobs:
       - name: Validar PROD_TOKEN
         shell: powershell
         env:
-         PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
+          PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
         run: |
           if ([string]::IsNullOrEmpty($env:PROD_TOKEN)) {
             Write-Error "Falta PROD_TOKEN"
             exit 1
           }
-         Write-Host "PROD_TOKEN configurado correctamente"
+          Write-Host "PROD_TOKEN configurado correctamente"
