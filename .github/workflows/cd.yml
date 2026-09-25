@@ -56,12 +56,12 @@ jobs:
 
     steps:
       - name: Validar PROD_TOKEN
+        shell: powershell
         env:
-          PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
+         PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
         run: |
-          if [ -z "$PROD_TOKEN" ]; then
-            echo "PROD_TOKEN no está configurado"
+          if ([string]::IsNullOrEmpty($env:PROD_TOKEN)) {
+            Write-Error "Falta PROD_TOKEN"
             exit 1
-          fi
-
-          echo "PROD_TOKEN está configurado correctamente"
+          }
+         Write-Host "PROD_TOKEN configurado correctamente"
